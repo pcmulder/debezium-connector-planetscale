@@ -154,7 +154,7 @@ event: COMMIT
 
 Vitess's `MoveTables` workflow move a table from one keyspace to another.
 
-The vitess-connector supports this workflow. No data lose, nor data duplication for the connector that copies from the source keyspace.
+The vitess-connector supports this workflow. No data loss, nor data duplication for the connector that copies from the source keyspace.
 
 The entire history of the moved table will be replicated to another connector if the later is replicating from the target keyspace.
 
@@ -164,7 +164,7 @@ Vitess's `Reshard` operation copies data from the source shards into the target 
 
 ### Recommended way
 The vitess-connector automatically supports Reshard if it subscribes to all shards in the keyspace.
-No data lose, nor data duplication will happen during the reshard operation.
+No data loss, nor data duplication will happen during the reshard operation.
 After the `SwitchWrites` of the Reshard and before deleting the source shards, make sure that the connector is not down and the offset
 topic has the new VGTID from the target shards. Otherwise, if the source shards are already deleted, VStream will throw an error when reading 
 from the old VGTID from the source shards.
