@@ -9,6 +9,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ import io.debezium.connector.planetscale.VitessType;
 public class ReplicationMessageColumnValueResolver {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ReplicationMessageColumnValueResolver.class);
-    private static final java.util.regex.Pattern ZERO_DATE_PATTERN = java.util.regex.Pattern.compile("^\\d{4}-00-00.*$");
+    private static final Pattern ZERO_DATE_PATTERN = Pattern.compile("^\\d{4}-00-00.*$");
 
     public static Object resolveValue(
                                       VitessType vitessType, ReplicationMessage.ColumnValue<byte[]> value, boolean includeUnknownDatatypes) {

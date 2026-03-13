@@ -134,4 +134,40 @@ public class ReplicationMessageColumnValueResolverTest {
                 false);
         assertThat(resolvedJavaValue).isEqualTo("1999-12-31 23:59:59");
     }
+
+    @Test
+    public void shouldResolveZeroDateToNull() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.DATE),
+                new VitessColumnValue("0000-00-00".getBytes()),
+                false);
+        assertThat(resolvedJavaValue).isNull();
+    }
+
+    @Test
+    public void shouldResolveZeroTimestampToNull() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.TIMESTAMP),
+                new VitessColumnValue("0000-00-00 00:00:00".getBytes()),
+                false);
+        assertThat(resolvedJavaValue).isNull();
+    }
+
+    @Test
+    public void shouldResolveNonZeroYearZeroDateToNull() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.DATE),
+                new VitessColumnValue("2024-00-00".getBytes()),
+                false);
+        assertThat(resolvedJavaValue).isNull();
+    }
+
+    @Test
+    public void shouldResolveNonZeroYearZeroTimestampToNull() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.TIMESTAMP),
+                new VitessColumnValue("2024-00-00 00:00:00".getBytes()),
+                false);
+        assertThat(resolvedJavaValue).isNull();
+    }
 }
