@@ -8,6 +8,7 @@ package io.debezium.connector.planetscale.connection;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.sql.Types;
 
@@ -167,6 +168,51 @@ public class ReplicationMessageColumnValueResolverTest {
         Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
                 new VitessType(AnonymousValue.getString(), Types.TIMESTAMP),
                 new VitessColumnValue("2024-00-00 00:00:00".getBytes()),
+                false);
+        assertThat(resolvedJavaValue).isNull();
+    }
+
+    @Test
+    public void shouldResolveMalformedDateToNull() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.DATE),
+                new VitessColumnValue("not-a-date".getBytes()),
+                false);
+        assertThat(resolvedJavaValue).isNull();
+    }
+
+    @Test
+    public void shouldResolveEmptyDateToNull() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.DATE),
+                new VitessColumnValue("".getBytes()),
+                false);
+        assertThat(resolvedJavaValue).isNull();
+    }
+
+    @Test
+    public void shouldResolveMalformedTimestampToNull() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.TIMESTAMP),
+                new VitessColumnValue("not-a-timestamp".getBytes()),
+                false);
+        assertThat(resolvedJavaValue).isNull();
+    }
+
+    @Test
+    public void shouldResolveTimeToTime() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.TIME),
+                new VitessColumnValue("12:30:45".getBytes()),
+                false);
+        assertThat(resolvedJavaValue).isEqualTo(Time.valueOf("12:30:45"));
+    }
+
+    @Test
+    public void shouldResolveMalformedTimeToNull() {
+        Object resolvedJavaValue = ReplicationMessageColumnValueResolver.resolveValue(
+                new VitessType(AnonymousValue.getString(), Types.TIME),
+                new VitessColumnValue("not-a-time".getBytes()),
                 false);
         assertThat(resolvedJavaValue).isNull();
     }

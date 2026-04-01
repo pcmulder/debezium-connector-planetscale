@@ -47,7 +47,7 @@ public class ReplicationMessageColumnValueResolver {
             case Types.DATE:
                 return stringToDate(value.asString());
             case Types.TIME:
-                return Time.valueOf(value.asString());
+                return stringToTime(value.asString());
             case Types.TIMESTAMP:
                 return stringToTimestamp(value.asString());
             case Types.TIMESTAMP_WITH_TIMEZONE:
@@ -70,7 +70,23 @@ public class ReplicationMessageColumnValueResolver {
             LOGGER.warn("Invalid timestamp '{}' converted to null", value);
             return null;
         }
-        return Timestamp.valueOf(value);
+        try {
+            return Timestamp.valueOf(value);
+        }
+        catch (IllegalArgumentException e) {
+            LOGGER.warn("Unparseable timestamp '{}' converted to null", value);
+            return null;
+        }
+    }
+
+    private static Time stringToTime(String value) {
+        try {
+            return Time.valueOf(value);
+        }
+        catch (IllegalArgumentException e) {
+            LOGGER.warn("Unparseable time '{}' converted to null", value);
+            return null;
+        }
     }
 
     private static Date stringToDate(String value) {
@@ -78,6 +94,12 @@ public class ReplicationMessageColumnValueResolver {
             LOGGER.warn("Invalid date '{}' converted to null", value);
             return null;
         }
-        return Date.valueOf(value);
+        try {
+            return Date.valueOf(value);
+        }
+        catch (IllegalArgumentException e) {
+            LOGGER.warn("Unparseable date '{}' converted to null", value);
+            return null;
+        }
     }
 }
