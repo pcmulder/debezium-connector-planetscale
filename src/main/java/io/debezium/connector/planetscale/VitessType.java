@@ -54,13 +54,26 @@ public class VitessType {
     }
 
     public Long getSetNumeral(String value) {
+        // Empty SET value → 0 (no members selected)
+        if (value == null || value.isEmpty()) {
+            return 0L;
+        }
         String[] members = value.split(",");
         Long result = 0L;
         for (String member : members) {
+            if (member.isEmpty()) {
+                continue;
+            }
             long index = enumValues.indexOf(member);
             if (index == -1) {
-                index = Long.valueOf(member);
-                return index;
+                // Unknown member name — try parsing as numeric (legacy behavior)
+                try {
+                    return Long.valueOf(member);
+                }
+                catch (NumberFormatException e) {
+                    // Malformed SET value; skip this member
+                    continue;
+                }
             }
             else {
                 Double power = Math.pow(2, index);

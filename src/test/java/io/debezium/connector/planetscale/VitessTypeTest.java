@@ -109,6 +109,33 @@ public class VitessTypeTest {
                 .isEqualTo(new VitessType(Query.Type.SET.name(), Types.BIGINT, Arrays.asList("e',','u", "us", "asia")));
     }
 
+    @Test
+    public void shouldHandleEmptySetValue() {
+        // Empty SET value should return 0 (no members selected), not throw NumberFormatException.
+        // This caused CDC to stop entirely when PlanetScale sent empty SET values.
+        Query.Field setField = Query.Field.newBuilder()
+                .setType(Query.Type.SET)
+                .setColumnType("set('a','b','c')")
+                .build();
+        VitessType vt = VitessType.resolve(setField);
+        assertThat(vt.getSetNumeral("")).isEqualTo(0L);
+        assertThat(vt.getSetNumeral(null)).isEqualTo(0L);
+    }
+
+    @Test
+    public void shouldComputeSetNumeralBitmask() {
+        Query.Field setField = Query.Field.newBuilder()
+                .setType(Query.Type.SET)
+                .setColumnType("set('a','b','c')")
+                .build();
+        VitessType vt = VitessType.resolve(setField);
+        assertThat(vt.getSetNumeral("a")).isEqualTo(1L); // bit 0
+        assertThat(vt.getSetNumeral("b")).isEqualTo(2L); // bit 1
+        assertThat(vt.getSetNumeral("c")).isEqualTo(4L); // bit 2
+        assertThat(vt.getSetNumeral("a,b")).isEqualTo(3L); // bits 0+1
+        assertThat(vt.getSetNumeral("a,b,c")).isEqualTo(7L); // bits 0+1+2
+    }
+
     private Query.Field asField(Query.Type type) {
         return Query.Field.newBuilder().setType(type).build();
     }
