@@ -42,6 +42,10 @@ public class VitessType {
     }
 
     public Integer getEnumOrdinal(String value) {
+        // MySQL enum ordinal 0 = empty/invalid value (stored as '')
+        if (value == null || value.isEmpty()) {
+            return 0;
+        }
         int index = enumValues.indexOf(value);
         if (index == -1) {
             return Integer.valueOf(value);
